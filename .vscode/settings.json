@@ -4,6 +4,8 @@
 		"algorithm": "cpp",
 		"cmath": "cpp",
 		"cstring": "cpp",
-		"utility": "cpp"
+		"utility": "cpp",
+		"queue": "cpp",
+		"iostream": "cpp"
 	}
 }
