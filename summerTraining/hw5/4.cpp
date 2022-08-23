@@ -23,11 +23,11 @@ const int maxn=2e5+5;
 
 int n;
 
-int tot=0,lnk[maxn],nxt[maxn*2],to[maxn*2];
+int tot=0,lnk[maxn],nxt[maxn*2],to[maxn*2]; // 用邻接表存图
 int fa[maxn],depth[maxn];
 
-vector<int> level[maxn];
-vector<int> son[maxn];
+vector<int> level[maxn]; // 存储每一层包含的节点
+vector<int> son[maxn]; // son[i] 表示 i 的儿子节点组成的集合
 
 void add_edge(int x,int y){
 	tot++; to[tot]=y;
@@ -48,12 +48,15 @@ signed main(){
 		int x=read(),y=read();
 		add_edge(x,y); add_edge(y,x);
 	}
+
 	build_tree(1);
 	for (int i=1;i<=n;i++)
 		level[depth[i]+1].push_back(i),
 		sort(son[i].begin(),son[i].end());
+		// 此处排序是为了方便比较两个 vector 中的元素是否相同，相当于把两个 vector 看成集合
+		// 下面的排序同理
 	vector<int> last; last.clear();
-	for (int i=1;i<=n;i++){
+	for (int i=1;i<=n;i++){ // BFS 必然是一层一层处理
 		vector<int> vec; vec.clear();
 		for (int j=0;j<(int)level[i].size();j++) vec.push_back(read());
 		int ptr = 0;
@@ -61,16 +64,21 @@ signed main(){
 			vector<int> now; now.clear();
 			for (int k=0;k<(int)son[last[j]].size();k++) now.push_back(vec[ptr++]);
 			sort(now.begin(),now.end());
-			if (now != son[last[j]]){
-				// for (int t=0;t<(int)now.size();t++) printf("%d ",now[t]); printf("\n");
-				// for (int t=0;t<(int)son[last[j]].size();t++) printf("%d ",son[last[j]][t]);  printf("\n");
+			if (now != son[last[j]]){ // 第一个检测：当前层按顺序是上一层各个节点的儿子组成
 				printf("No\n");
 				return 0;
 			}
+			// 关于这个检测，考虑一个简单的反例：
+			//    1
+			//  2   3
+			//  4   5
+			// BFS 序：1 2 3 5 4 是错误的
+			// 也就是新的一层必须「按顺序」是上面一层各个节点的儿子
 		}
 		last=vec;
 		sort(vec.begin(),vec.end());
-		if (vec != level[i]){
+		if (vec != level[i]){ // 第二个检测：树的每一层节点集合
+		// 这个比较容易想到，如果只写这个检测能拿到 95 分 =_=
 			printf("No\n");
 			return 0;
 		}
